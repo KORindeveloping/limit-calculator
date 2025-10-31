@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limit Calculator - x → ∞</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(to right, #2c3e50, #4a6491);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-section, .output-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eaeaea;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        input:focus {
+            border-color: #4a6491;
+            outline: none;
+        }
+
+        .btn {
+            background: linear-gradient(to right, #3498db, #2c3e50);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .examples {
+            margin-top: 25px;
+        }
+
+        .example-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .example-btn {
+            background: #e9ecef;
+            border: 1px solid #ced4da;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .example-btn:hover {
+            background: #dee2e6;
+        }
+
+        .result-box {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 5px solid #3498db;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .result-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .result-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #27ae60;
+            margin: 10px 0;
+        }
+
+        .steps {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #ddd;
+        }
+
+        .step {
+            margin-bottom: 8px;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .step:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #3498db;
+        }
+
+        .error {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+
+        .numerical-results {
+            margin-top: 20px;
+        }
+
+        .numerical-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .numerical-table th, .numerical-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .numerical-table th {
+            background: #f1f1f1;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Limit Calculator</h1>
+            <p class="subtitle">Evaluate limits as x approaches infinity</p>
+        </header>
+        
+        <div class="content">
+            <div class="input-section">
+                <h2>Enter Your Function</h2>
+                <div class="input-group">
+                    <label for="function-input">Function f(x):</label>
+                    <input type="text" id="function-input" placeholder="e.g., (2*x+1)/(x-3)" value="(2*x+1)/(x-3)">
+                </div>
+                
+                <button id="calculate-btn" class="btn">Calculate Limit</button>
+                <button id="numerical-btn" class="btn">Numerical Approximation</button>
+                
+                <div class="examples">
+                    <h3>Try These Examples:</h3>
+                    <div class="example-buttons">
+                        <div class="example-btn" data-expr="1/x">1/x</div>
+                        <div class="example-btn" data-expr="(2*x+1)/(x-3)">(2x+1)/(x-3)</div>
+                        <div class="example-btn" data-expr="(x^2+1)/(x^3-2*x)">(x²+1)/(x³-2x)</div>
+                        <div class="example-btn" data-expr="sqrt(x^2+1)-x">√(x²+1)-x</div>
+                        <div class="example-btn" data-expr="(1+1/x)^x">(1+1/x)^x</div>
+                        <div class="example-btn" data-expr="(3*x^2+5)/(2*x^2-1)">(3x²+5)/(2x²-1)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="output-section">
+                <h2>Results</h2>
+                <div id="result-container">
+                    <div class="result-box">
+                        <div class="result-title">Enter a function and click "Calculate Limit"</div>
+                    </div>
+                </div>
+                
+                <div id="numerical-container" class="numerical-results" style="display: none;">
+                    <h3>Numerical Approximation</h3>
+                    <table class="numerical-table">
+                        <thead>
+                            <tr>
+                                <th>x Value</th>
+                                <th>f(x)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="numerical-results">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Limit Calculator &copy; 2023 | JavaScript Math Solver</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const functionInput = document.getElementById('function-input');
+            const calculateBtn = document.getElementById('calculate-btn');
+            const numericalBtn = document.getElementById('numerical-btn');
+            const resultContainer = document.getElementById('result-container');
+            const numericalContainer = document.getElementById('numerical-container');
+            const numericalResults = document.getElementById('numerical-results');
+            const exampleButtons = document.querySelectorAll('.example-btn');
+            
+            // Example button handlers
+            exampleButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    functionInput.value = this.getAttribute('data-expr');
+                });
+            });
+            
+            // Calculate limit button handler
+            calculateBtn.addEventListener('click', function() {
+                const expression = functionInput.value.trim();
+                if (!expression) {
+                    showError('Please enter a function');
+                    return;
+                }
+                
+                numericalContainer.style.display = 'none';
+                calculateLimit(expression);
+            });
+            
+            // Numerical approximation button handler
+            numericalBtn.addEventListener('click', function() {
+                const expression = functionInput.value.trim();
+                if (!expression) {
+                    showError('Please enter a function');
+                    return;
+                }
+                
+                calculateNumerical(expression);
+            });
+            
+            // Main limit calculation function
+            function calculateLimit(expression) {
+                try {
+                    const result = analyzeAndCalculateLimit(expression);
+                    displayResult(result);
+                } catch (error) {
+                    showError('Error calculating limit: ' + error.message);
+                }
+            }
+            
+            // Analyze the expression and calculate the limit
+            function analyzeAndCalculateLimit(expr) {
+                // Clean the expression
+                expr = expr.replace(/\s/g, '');
+                
+                const result = {
+                    expression: expr,
+                    limit: null,
+                    steps: [],
+                    type: 'unknown'
+                };
+                
+                // Handle rational functions (most common case)
+                if (expr.includes('/')) {
+                    const parts = expr.split('/');
+                    if (parts.length === 2) {
+                        const numerator = parts[0];
+                        const denominator = parts[1];
+                        
+                        result.type = 'rational';
+                        result.steps.push('Identified as rational function');
+                        
+                        const numAnalysis = analyzePolynomial(numerator);
+                        const denAnalysis = analyzePolynomial(denominator);
+                        
+                        result.steps.push(`Numerator: ${numAnalysis.description}`);
+                        result.steps.push(`Denominator: ${denAnalysis.description}`);
+                        
+                        if (numAnalysis.degree > denAnalysis.degree) {
+                            result.limit = '∞';
+                            result.steps.push('Numerator degree > Denominator degree → Limit = ∞');
+                        } else if (numAnalysis.degree < denAnalysis.degree) {
+                            result.limit = '0';
+                            result.steps.push('Numerator degree < Denominator degree → Limit = 0');
+                        } else {
+                            result.limit = numAnalysis.leadingCoeff / denAnalysis.leadingCoeff;
+                            result.steps.push(`Same degree → Limit = ratio of leading coefficients = ${numAnalysis.leadingCoeff}/${denAnalysis.leadingCoeff} = ${result.limit}`);
+                        }
+                        
+                        return result;
+                    }
+                }
+                
+                // Handle other function types
+                if (expr === '1/x' || expr === '1/x^1') {
+                    result.limit = 0;
+                    result.steps.push('Direct application of limit rule: 1/x → 0 as x → ∞');
+                    return result;
+                }
+                
+                if (expr === 'x' || expr === 'x^1') {
+                    result.limit = '∞';
+                    result.steps.push('Direct application of limit rule: x → ∞ as x → ∞');
+                    return result;
+                }
+                
+                if (expr.includes('sqrt(x)')) {
+                    result.limit = '∞';
+                    result.steps.push('Square root function grows without bound as x → ∞');
+                    return result;
+                }
+                
+                if (expr.includes('(1+1/x)^x')) {
+                    result.limit = 'e (Euler\'s number ≈ 2.71828)';
+                    result.steps.push('Special limit: (1+1/x)^x → e as x → ∞');
+                    return result;
+                }
+                
+                // If we can't determine, try numerical approximation
+                result.limit = 'Cannot determine symbolically';
+                result.steps.push('Could not determine limit using symbolic methods');
+                return result;
+            }
+            
+            // Analyze a polynomial expression
+            function analyzePolynomial(expr) {
+                // Handle simple cases
+                if (expr === 'x') {
+                    return { degree: 1, leadingCoeff: 1, description: 'x (degree 1, coefficient 1)' };
+                }
+                
+                if (!isNaN(expr)) {
+                    return { degree: 0, leadingCoeff: parseFloat(expr), description: `constant ${expr}` };
+                }
+                
+                // Handle polynomials with exponents
+                if (expr.includes('x^')) {
+                    const match = expr.match(/([-+]?[0-9]*\.?[0-9]*)\*?x\^([0-9]+)/);
+                    if (match) {
+                        const coeffStr = match[1];
+                        let coeff = 1;
+                        
+                        if (coeffStr === '-') {
+                            coeff = -1;
+                        } else if (coeffStr && coeffStr !== '+') {
+                            coeff = parseFloat(coeffStr);
+                        }
+                        
+                        const degree = parseInt(match[2]);
+                        return { 
+                            degree, 
+                            leadingCoeff: coeff, 
+                            description: `${coeff}*x^${degree} (degree ${degree}, coefficient ${coeff})` 
+                        };
+                    }
+                }
+                
+                // Handle simple x terms
+                if (expr.includes('x')) {
+                    const match = expr.match(/([-+]?[0-9]*\.?[0-9]*)\*?x/);
+                    if (match) {
+                        const coeffStr = match[1];
+                        let coeff = 1;
+                        
+                        if (coeffStr === '-') {
+                            coeff = -1;
+                        } else if (coeffStr && coeffStr !== '+') {
+                            coeff = parseFloat(coeffStr);
+                        }
+                        
+                        return { 
+                            degree: 1, 
+                            leadingCoeff: coeff, 
+                            description: `${coeff}*x (degree 1, coefficient ${coeff})` 
+                        };
+                    }
+                }
+                
+                // Default to constant
+                return { degree: 0, leadingCoeff: 0, description: 'constant 0' };
+            }
+            
+            // Display the result
+            function displayResult(result) {
+                let html = `
+                    <div class="result-title">lim [x → ∞] ${result.expression}</div>
+                    <div class="result-value">${result.limit}</div>
+                    <div class="steps">
+                `;
+                
+                result.steps.forEach(step => {
+                    html += `<div class="step">${step}</div>`;
+                });
+                
+                html += `</div>`;
+                
+                resultContainer.innerHTML = html;
+            }
+            
+            // Calculate numerical approximation
+            function calculateNumerical(expression) {
+                try {
+                    // Show the numerical container
+                    numericalContainer.style.display = 'block';
+                    
+                    // Clear previous results
+                    numericalResults.innerHTML = '';
+                    
+                    // Test with increasingly large values
+                    const testValues = [10, 100, 1000, 10000, 100000, 1000000];
+                    let lastResult = null;
+                    let isConverging = true;
+                    
+                    testValues.forEach(value => {
+                        try {
+                            // Replace x with the test value
+                            let exprWithValue = expression.replace(/x/g, `(${value})`);
+                            exprWithValue = exprWithValue.replace(/\^/g, '**');
+                            
+                            // Evaluate the expression
+                            const result = eval(exprWithValue);
+                            
+                            // Check if result is a valid number
+                            if (isNaN(result) || !isFinite(result)) {
+                                numericalResults.innerHTML += `
+                                    <tr>
+                                        <td>${value.toExponential(2)}</td>
+                                        <td class="error">Undefined</td>
+                                    </tr>
+                                `;
+                            } else {
+                                numericalResults.innerHTML += `
+                                    <tr>
+                                        <td>${value.toExponential(2)}</td>
+                                        <td>${result.toFixed(6)}</td>
+                                    </tr>
+                                `;
+                                
+                                // Check convergence
+                                if (lastResult !== null) {
+                                    const diff = Math.abs(result - lastResult);
+                                    if (diff > 0.001) {
+                                        isConverging = false;
+                                    }
+                                }
+                                
+                                lastResult = result;
+                            }
+                        } catch (error) {
+                            numericalResults.innerHTML += `
+                                <tr>
+                                    <td>${value.toExponential(2)}</td>
+                                    <td class="error">Evaluation Error</td>
+                                </tr>
+                            `;
+                        }
+                    });
+                    
+                    // Add convergence information
+                    if (lastResult !== null && isConverging) {
+                        numericalResults.innerHTML += `
+                            <tr>
+                                <td colspan="2" style="background: #d4edda; font-weight: bold;">
+                                    The function appears to converge to approximately ${lastResult.toFixed(6)}
+                                </td>
+                            </tr>
+                        `;
+                    } else if (!isConverging) {
+                        numericalResults.innerHTML += `
+                            <tr>
+                                <td colspan="2" style="background: #f8d7da; font-weight: bold;">
+                                    The function may not converge as x → ∞
+                                </td>
+                            </tr>
+                        `;
+                    }
+                    
+                } catch (error) {
+                    showError('Error in numerical approximation: ' + error.message);
+                }
+            }
+            
+            // Show error message
+            function showError(message) {
+                resultContainer.innerHTML = `
+                    <div class="result-box">
+                        <div class="result-title error">${message}</div>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
