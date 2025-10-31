@@ -1,0 +1,8 @@
+{
+  "name": "limit-calculator",
+  "version": "1.0.0",
+  "description": "Math Limit Calculator",
+  "scripts": {
+    "build": "echo 'Building static site'"
+  }
+}
